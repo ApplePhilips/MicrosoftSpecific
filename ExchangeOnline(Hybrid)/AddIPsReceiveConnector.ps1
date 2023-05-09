@@ -1,3 +1,16 @@
+<#
+.SYNOPSIS
+    This takes a CSV of single column IPs and add them to an existing connector on a Exchange Server for Relay to EXO
+.DESCRIPTION
+    This has the Receievce Connector already specified in the code, will need to update if you have different named connector
+.NOTES
+    Information or caveats about the function e.g. 'This function is not supported in Linux'
+.LINK
+    Specify a URI to a help page, this will show when Get-Help -Online is used.
+.EXAMPLE
+    Simple Launch from same director with name of file, AddIPsReceieveConnector.ps1
+#>
+
 
 
 
@@ -12,12 +25,13 @@ function LoadInputFile  ($InitialDirectory) {
 
 function RemoteConnectEAC () {
     #Checks for Existing Session 
+    $PromptForServer = Read-Host "Please Enter the FQDN of the Server to connect to:"
     $FoundSession = Get-PSSession | Where-Object {$_.ComputerName.ToLower().Contains("ex11")}
-    #Starts session with ex11 Exchange management
+    #Starts session with Exchange management
     if ($null -eq ($FoundSession))
     {
         $DACredential = Get-Credential -message "Please Provide ADM Account Credentials"
-        $Netex11Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://ex11.vvsd.org/PowerShell/ -Authentication Kerberos -Credential $DACredential
+        $Netex11Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri "http://$($PromptForServer)/PowerShell/" -Authentication Kerberos -Credential $DACredential
         Import-PSSession $Netex11Session -AllowClobber
     }
     elseif ($FoundSession) {
